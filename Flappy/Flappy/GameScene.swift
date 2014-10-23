@@ -45,6 +45,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // TODO: create some pipes with some duratuon
         // TODO: track score of pipes passed
         
+        // forwardMovement.speed = 1.0
+        
     }
     
     // MARK: #===== Frame Update =====#
@@ -61,7 +63,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
    
     func addSkyline () {
 
-        // TODO: there are two bugs, 1) there is a pixel between sprites. 2) there is a jump between the 3rd and 1st sprite
+        // TODO: there is a jump between the 3rd and 1st sprite
         
         let skylineTexture           = imagesAtlas.textureNamed( "Day_Background" )
         skylineTexture.filteringMode = SKTextureFilteringMode.Nearest
@@ -72,7 +74,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         for i in 0...3 {
             let skyline = SKSpriteNode( texture: skylineTexture )
-            skyline.position = CGPointMake( CGFloat(i) * skylineTexture.size().width, self.frame.height * 0.5 )
+            skyline.position = CGPointMake( CGFloat(i) * skylineTexture.size().width * 0.99 , self.frame.height * 0.5 )
             skyline.runAction( skylineActions );
             forwardMovement.addChild( skyline )
         }
@@ -83,13 +85,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let foregroundTexture = imagesAtlas.textureNamed("Bottom_Scroller")
         foregroundTexture.filteringMode = SKTextureFilteringMode.Nearest
         
-        let foregroundMove = SKAction.moveByX(-self.frame.width * 2.0, y:0, duration: 5)
-        let foregroundReset = SKAction.moveByX(self.frame.width * 2.0, y:0 , duration: 0)
-        let foregroundActions = SKAction.repeatActionForever(SKAction.sequence([foregroundMove, foregroundReset]))
+        let foregroundMove = SKAction.moveByX( -self.frame.width * 2.0, y:0, duration: 5 )
+        let foregroundReset = SKAction.moveByX( self.frame.width * 2.0, y:0 , duration: 0 )
+        let foregroundActions = SKAction.repeatActionForever( SKAction.sequence( [foregroundMove, foregroundReset] ) )
         
         for i in 0...3 {
             let foreground = SKSpriteNode(texture: foregroundTexture)
-            foreground.position = CGPointMake(CGFloat(i) * foregroundTexture.size().width, foregroundTexture.size().height * 0.5 )
+            foreground.position = CGPointMake( CGFloat(i) * foregroundTexture.size().width, foregroundTexture.size().height * 0.5 )
             foreground.runAction(foregroundActions);
             
             foreground.physicsBody = SKPhysicsBody(rectangleOfSize:foreground.size)
