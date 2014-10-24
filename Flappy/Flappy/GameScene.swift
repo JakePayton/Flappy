@@ -9,7 +9,7 @@
 import UIKit
 import SpriteKit
 
-let spaceBetweenPipes = 100.0
+let spaceBetweenPipes = 150.0
 let imagesAtlas       = SKTextureAtlas(named: "FlappyAssets")
 
 struct flappyContactMasks {
@@ -30,6 +30,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     override func didMoveToView( view: SKView ) {
 
+        physicsWorld.gravity = CGVectorMake(0,-5)
+        physicsWorld.contactDelegate = self
+        
         self.backgroundColor = SKColor( red: 81.0/255.0, green: 192.0/255.0, blue: 201.0/255.0, alpha: 1.0 )
 
         forwardMovement = SKNode()
@@ -39,13 +42,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addForeground()
         addFlappyBird()
         
-        physicsWorld.gravity = CGVectorMake(0,-5)
-        physicsWorld.contactDelegate = self
+        pipeMovement = SKNode()
+        addChild(pipeMovement)
         
-        // TODO: create some pipes with some duratuon
+        let spawn = SKAction.runBlock({() in self.pipeGenerator()})
+        let delay = SKAction.waitForDuration(NSTimeInterval(1.66))
+        self.runAction( SKAction.repeatActionForever(SKAction.sequence( [ spawn, delay ] ) ) )
+        
         // TODO: track score of pipes passed
         
-        // forwardMovement.speed = 1.0
+        forwardMovement.speed = 1.0
         
     }
     
@@ -128,6 +134,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         forwardMovement.addChild(flappyBird)
     }
     
+    func addPhysicsBodyToPipeNode( spriteNode: SKSpriteNode ) {
+        spriteNode.physicsBody                     = SKPhysicsBody( rectangleOfSize : spriteNode.size )
+        spriteNode.physicsBody?.dynamic            = true
+        spriteNode.physicsBody?.allowsRotation     = false
+        spriteNode.physicsBody?.contactTestBitMask = flappyContactMasks.Bird
+        spriteNode.physicsBody?.categoryBitMask    = flappyContactMasks.Pipe
+    }
+    
+    func addActionsToPipeNode( spriteNode: SKSpriteNode ) {
+        
+        let move = SKAction.moveByX( -self.frame.width * 2.0, y:0, duration: 5 )
+        let remove = SKAction.removeFromParent()
+        let actions = SKAction.repeatActionForever( SKAction.sequence( [ move, remove ] ) )
+        
+        spriteNode.runAction( actions )
+    }
+    
+    func pipeGenerator() {
+        
+        let topPipe = SKSpriteNode(texture: imagesAtlas.textureNamed("Downward_Green_Pipe") )
+        let bottomPipe = SKSpriteNode(texture: imagesAtlas.textureNamed("Upward_Green_Pipe") )
+        
+        topPipe.position = CGPointMake( self.frame.width * 2.0, self.frame.height * 0.5 )
+        bottomPipe.position = CGPointMake( self.frame.width * 2.0, self.frame.height * 0.5 )
+        
+        addPhysicsBodyToPipeNode( topPipe )
+        addPhysicsBodyToPipeNode( bottomPipe )
+        
+        addActionsToPipeNode( topPipe )
+        addActionsToPipeNode( bottomPipe )
+        
+        pipeMovement.addChild( topPipe )
+        pipeMovement.addChild( bottomPipe )
+        
+    }
+    
     // MARK: #===== Touch =====#
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -141,11 +183,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBeginContact(contact: SKPhysicsContact) {
     
-        var firstObject  = contact.bodyA.contactTestBitMask
-        var secondObject = contact.bodyB.contactTestBitMask
+        var firstObject  = contact.bodyA.categoryBitMask
+        var secondObject = contact.bodyB.categoryBitMask
         
         if ( firstObject == flappyContactMasks.Bird || secondObject == flappyContactMasks.Bird ) {
             // TODO: do something when a bird collides with the ground or a pipe, gameOver scene and transition?
+            pipeMovement.speed = 0;
+            forwardMovement.speed = 0;
+            backgroundColor = .redColor()
         }
     }
     
