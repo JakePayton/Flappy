@@ -14,6 +14,8 @@
 		E2793ECE19F6C791006E9574 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E2793ECC19F6C791006E9574 /* LaunchScreen.xib */; };
 		E2793EDA19F6C791006E9574 /* FlappyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2793ED919F6C791006E9574 /* FlappyTests.swift */; };
 		E2793EE419F6CA4C006E9574 /* FlappyAssets.atlas in Resources */ = {isa = PBXBuildFile; fileRef = E2793EE319F6CA4C006E9574 /* FlappyAssets.atlas */; };
+		E2D6053619FC2EAD005FB69A /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D6053519FC2EAD005FB69A /* GameOverScene.swift */; };
+		E2D6053819FC383D005FB69A /* DayOrNight.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D6053719FC383D005FB69A /* DayOrNight.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +40,8 @@
 		E2793ED819F6C791006E9574 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E2793ED919F6C791006E9574 /* FlappyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlappyTests.swift; sourceTree = "<group>"; };
 		E2793EE319F6CA4C006E9574 /* FlappyAssets.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = FlappyAssets.atlas; sourceTree = "<group>"; };
+		E2D6053519FC2EAD005FB69A /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
+		E2D6053719FC383D005FB69A /* DayOrNight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DayOrNight.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +86,8 @@
 				E2793EE319F6CA4C006E9574 /* FlappyAssets.atlas */,
 				E2793EBF19F6C791006E9574 /* AppDelegate.swift */,
 				E2793EC319F6C791006E9574 /* GameScene.swift */,
+				E2D6053519FC2EAD005FB69A /* GameOverScene.swift */,
+				E2D6053719FC383D005FB69A /* DayOrNight.swift */,
 				E2793EC519F6C791006E9574 /* GameViewController.swift */,
 				E2793EC719F6C791006E9574 /* Main.storyboard */,
 				E2793ECC19F6C791006E9574 /* LaunchScreen.xib */,
@@ -217,6 +223,8 @@
 			files = (
 				E2793EC419F6C791006E9574 /* GameScene.swift in Sources */,
 				E2793EC619F6C791006E9574 /* GameViewController.swift in Sources */,
+				E2D6053619FC2EAD005FB69A /* GameOverScene.swift in Sources */,
+				E2D6053819FC383D005FB69A /* DayOrNight.swift in Sources */,
 				E2793EC019F6C791006E9574 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -411,6 +419,7 @@
 				E2793EDF19F6C791006E9574 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E2793EE019F6C791006E9574 /* Build configuration list for PBXNativeTarget "FlappyTests" */ = {
 			isa = XCConfigurationList;
@@ -419,6 +428,7 @@
 				E2793EE219F6C791006E9574 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

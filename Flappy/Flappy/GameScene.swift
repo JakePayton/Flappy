@@ -27,6 +27,8 @@ struct flappyZPos {
     static let skyline : CGFloat = -3.0
 }
 
+// TODO: need sounds
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var skyline:         SKSpriteNode!
@@ -42,7 +44,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.gravity = CGVectorMake(0,-5)
         physicsWorld.contactDelegate = self
         
-        self.backgroundColor = SKColor( red: 81.0/255.0, green: 192.0/255.0, blue: 201.0/255.0, alpha: 1.0 )
+        var bgColor = isDaytime()
+            ? SKColor( red: 81.0/255.0, green: 192.0/255.0, blue: 201.0/255.0, alpha: 1.0 )
+            : SKColor( red: 19.0/255.0, green: 135.0/255.0, blue: 146.0/255.0, alpha: 1.0 )
+        
+        self.backgroundColor = bgColor
 
         forwardMovement = SKNode()
         addChild(forwardMovement)
@@ -82,7 +88,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         // TODO: there is a jump between the 3rd and 1st sprite
         
-        let skylineTexture           = imagesAtlas.textureNamed( "Day_Background" )
+        let bgTextureName = isDaytime() ? "Day_Background" : "Night_Background"
+        
+        let skylineTexture           = imagesAtlas.textureNamed( bgTextureName )
         skylineTexture.filteringMode = SKTextureFilteringMode.Nearest
         
         let skylineMove    = SKAction.moveByX( -self.frame.width * 2.0, y: 0, duration: 15 )
@@ -129,12 +137,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let birdTexture3 = imagesAtlas.textureNamed( "Yellow_Bird_Wing_Up" )
         
         flappyBird           = SKSpriteNode( texture : birdTexture1 )
-        flappyBird.position  = CGPointMake( self.frame.width * 0.5, self.frame.height * 0.5 )
+        flappyBird.position  = CGPointMake( self.frame.width * 0.4, self.frame.height * 0.7 )
         flappyBird.zPosition = flappyZPos.bird
         
         flappyBird.physicsBody                     = SKPhysicsBody( rectangleOfSize : flappyBird.size )
         flappyBird.physicsBody?.dynamic            = true
-    //    flappyBird.physicsBody?.allowsRotation     = false
         flappyBird.physicsBody?.contactTestBitMask = flappyContactMasks.Pipe | flappyContactMasks.Ground
         flappyBird.physicsBody?.categoryBitMask    = flappyContactMasks.Bird
 
@@ -213,13 +220,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             pipeMovement.speed = 0
             forwardMovement.speed = 0
             scoreFeedback.speed = 0
-            scoreFeedback.text = "Game Over"
         
             flappyBird.physicsBody?.velocity = CGVectorMake( 0, 0 )
             physicsWorld.gravity = CGVectorMake( 0, 0 )
+        
+            let reveal = SKTransition.doorsCloseHorizontalWithDuration(0.5)
+            let gameOverScene = GameOverScene( size: self.size )
+            self.view?.presentScene( gameOverScene, transition: reveal )
             
-            
-            // show some kind of transition scene?
         }
     }
     
