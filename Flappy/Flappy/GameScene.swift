@@ -21,12 +21,13 @@ struct flappyContactMasks {
 }
 
 struct flappyZPos {
-    static let bird : CGFloat = 0.0
+    static let bird       : CGFloat = 0.0
     static let foreground : CGFloat = -1.0
-    static let pipes : CGFloat = -2.0
-    static let skyline : CGFloat = -3.0
+    static let pipes      : CGFloat = -2.0
+    static let skyline    : CGFloat = -3.0
 }
 
+// TODO: layouts for phones (4,5,6,6+)
 // TODO: need sounds
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -65,9 +66,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let delay = SKAction.waitForDuration(NSTimeInterval(1.66))
         self.runAction( SKAction.repeatActionForever(SKAction.sequence( [ spawn, delay ] ) ) )
         
-        scoreFeedback = SKLabelNode(fontNamed: "ChalkboardSE-Bold")
-        scoreFeedback.fontSize = 60.0
-        scoreFeedback.position = CGPointMake(frame.width / 2, frame.height * 0.3 )
+        scoreFeedback = SKLabelNode(fontNamed: "Futura-CondensedExtraBold")
+        scoreFeedback.fontSize = 24.0
+        scoreFeedback.fontColor = SKColor( red: 86.0/255.0, green: 127.0/255.0, blue: 41.0/255.0, alpha: 1.0 )
+        scoreFeedback.position = CGPointMake(frame.width * 0.1, frame.height * 0.07 )
+        scoreFeedback.horizontalAlignmentMode = .Left
         addChild(scoreFeedback)
         
         forwardMovement.speed = 1.0
@@ -167,10 +170,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func incrementScore() {
         score++
-        scoreFeedback.text = "\(score / 2)"
+        scoreFeedback.text = "Score:\(score)"
     }
     
-    func addActionsToPipeNode( spriteNode: SKSpriteNode ) {
+    func actionsForPipeSet() -> SKAction {
 
         let moveToBird = SKAction.moveByX( -self.frame.width * 1.1, y: 0, duration: 2.5 )
         let scoreUpdate = SKAction.runBlock({ self.incrementScore() })
@@ -178,8 +181,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let remove = SKAction.removeFromParent()
         let actions = SKAction.repeatActionForever( SKAction.sequence( [ moveToBird, scoreUpdate, moveOffscreen, remove ] ) )
         
-        spriteNode.runAction( actions )
+        return actions
     }
+    
+    // TODO: Pipe spawn logic needs to be better
     
     func pipeGenerator() {
 
@@ -202,12 +207,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addPhysicsBodyToPipeNode( topPipe )
         addPhysicsBodyToPipeNode( bottomPipe )
         
-        addActionsToPipeNode( topPipe )
-        addActionsToPipeNode( bottomPipe )
-        
         pipes.addChild( topPipe )
         pipes.addChild( bottomPipe )
-        
+        pipes.runAction( actionsForPipeSet() )
         pipeMovement.addChild(pipes)
     }
     
