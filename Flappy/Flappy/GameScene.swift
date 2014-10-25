@@ -9,7 +9,7 @@
 import UIKit
 import SpriteKit
 
-let spaceBetweenPipes = 150.0
+let spaceBetweenPipes = 100.0
 let imagesAtlas       = SKTextureAtlas(named: "FlappyAssets")
 
 struct flappyContactMasks {
@@ -29,9 +29,11 @@ struct flappyZPos {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    var skyline:         SKSpriteNode!
     var flappyBird:      SKSpriteNode!
     var forwardMovement: SKNode!
     var pipeMovement:    SKNode!
+    var scoreFeedback:   SKLabelNode!
 
     // MARK: #===== Init =====#
 
@@ -56,7 +58,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let delay = SKAction.waitForDuration(NSTimeInterval(1.66))
         self.runAction( SKAction.repeatActionForever(SKAction.sequence( [ spawn, delay ] ) ) )
         
-        // TODO: track score of pipes passed
+        scoreFeedback = SKLabelNode(fontNamed: "Helvetica")
+        scoreFeedback.position = CGPointMake(frame.width / 2, frame.height / 2)
+        addChild(scoreFeedback)
         
         forwardMovement.speed = 1.0
         
@@ -86,7 +90,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let skylineActions = SKAction.repeatActionForever( SKAction.sequence( [skylineMove, skylineReset] ) )
         
         for i in 0...3 {
-            let skyline = SKSpriteNode( texture: skylineTexture )
+            skyline = SKSpriteNode( texture: skylineTexture )
             skyline.zPosition = flappyZPos.skyline;
             skyline.position = CGPointMake( CGFloat(i) * skylineTexture.size().width * 0.99 , self.frame.height * 0.5 )
             skyline.runAction( skylineActions );
@@ -130,7 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         flappyBird.physicsBody                     = SKPhysicsBody( rectangleOfSize : flappyBird.size )
         flappyBird.physicsBody?.dynamic            = true
-        flappyBird.physicsBody?.allowsRotation     = false
+    //    flappyBird.physicsBody?.allowsRotation     = false
         flappyBird.physicsBody?.contactTestBitMask = flappyContactMasks.Pipe | flappyContactMasks.Ground
         flappyBird.physicsBody?.categoryBitMask    = flappyContactMasks.Bird
 
@@ -164,7 +168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func pipeGenerator() {
 
         let height = UInt32( UInt(self.frame.size.height / 4) )
-        let startingYPos = CGFloat(arc4random() % height + height)
+        let startingYPos = CGFloat(arc4random() % height + height  )
 
         let topPipeTexture = imagesAtlas.textureNamed("Downward_Green_Pipe")
         let bottomPipeTexture = imagesAtlas.textureNamed("Upward_Green_Pipe")
@@ -194,9 +198,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: #===== Touch =====#
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        
         flappyBird.physicsBody?.velocity = CGVectorMake( 0, 0 )
-        
         flappyBird.physicsBody?.applyImpulse( CGVectorMake( 0, 10 ) )
     }
    
@@ -208,10 +210,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var secondObject = contact.bodyB.categoryBitMask
         
         if ( firstObject == flappyContactMasks.Bird || secondObject == flappyContactMasks.Bird ) {
-            // TODO: do something when a bird collides with the ground or a pipe, gameOver scene and transition?
-            pipeMovement.speed = 0;
-            forwardMovement.speed = 0;
-            backgroundColor = .redColor()
+            pipeMovement.speed = 0
+            forwardMovement.speed = 0
+            scoreFeedback.speed = 0
+            scoreFeedback.text = "Game Over"
+        
+            flappyBird.physicsBody?.velocity = CGVectorMake( 0, 0 )
+            physicsWorld.gravity = CGVectorMake( 0, 0 )
+            
+            
+            // show some kind of transition scene?
         }
     }
     
