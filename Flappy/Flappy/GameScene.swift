@@ -20,6 +20,13 @@ struct flappyContactMasks {
     static let Ground    : UInt32 = 0b11      // 3
 }
 
+struct flappyZPos {
+    static let bird : CGFloat = 0.0
+    static let foreground : CGFloat = -1.0
+    static let pipes : CGFloat = -2.0
+    static let skyline : CGFloat = -3.0
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var flappyBird:      SKSpriteNode!
@@ -80,6 +87,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         for i in 0...3 {
             let skyline = SKSpriteNode( texture: skylineTexture )
+            skyline.zPosition = flappyZPos.skyline;
             skyline.position = CGPointMake( CGFloat(i) * skylineTexture.size().width * 0.99 , self.frame.height * 0.5 )
             skyline.runAction( skylineActions );
             forwardMovement.addChild( skyline )
@@ -98,6 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for i in 0...3 {
             let foreground = SKSpriteNode(texture: foregroundTexture)
             foreground.position = CGPointMake( CGFloat(i) * foregroundTexture.size().width, foregroundTexture.size().height * 0.5 )
+            foreground.zPosition = flappyZPos.foreground
             foreground.runAction(foregroundActions);
             
             foreground.physicsBody = SKPhysicsBody(rectangleOfSize:foreground.size)
@@ -115,8 +124,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let birdTexture2 = imagesAtlas.textureNamed( "Yellow_Bird_Wing_Straight" )
         let birdTexture3 = imagesAtlas.textureNamed( "Yellow_Bird_Wing_Up" )
         
-        flappyBird          = SKSpriteNode( texture : birdTexture1 )
-        flappyBird.position = CGPointMake( self.frame.width * 0.5, self.frame.height * 0.5 )
+        flappyBird           = SKSpriteNode( texture : birdTexture1 )
+        flappyBird.position  = CGPointMake( self.frame.width * 0.5, self.frame.height * 0.5 )
+        flappyBird.zPosition = flappyZPos.bird
         
         flappyBird.physicsBody                     = SKPhysicsBody( rectangleOfSize : flappyBird.size )
         flappyBird.physicsBody?.dynamic            = true
@@ -136,7 +146,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addPhysicsBodyToPipeNode( spriteNode: SKSpriteNode ) {
         spriteNode.physicsBody                     = SKPhysicsBody( rectangleOfSize : spriteNode.size )
-        spriteNode.physicsBody?.dynamic            = true
+        spriteNode.physicsBody?.dynamic            = false
         spriteNode.physicsBody?.allowsRotation     = false
         spriteNode.physicsBody?.contactTestBitMask = flappyContactMasks.Bird
         spriteNode.physicsBody?.categoryBitMask    = flappyContactMasks.Pipe
@@ -152,12 +162,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func pipeGenerator() {
+
+        let height = UInt32( UInt(self.frame.size.height / 4) )
+        let startingYPos = CGFloat(arc4random() % height + height)
+
+        let topPipeTexture = imagesAtlas.textureNamed("Downward_Green_Pipe")
+        let bottomPipeTexture = imagesAtlas.textureNamed("Upward_Green_Pipe")
         
-        let topPipe = SKSpriteNode(texture: imagesAtlas.textureNamed("Downward_Green_Pipe") )
-        let bottomPipe = SKSpriteNode(texture: imagesAtlas.textureNamed("Upward_Green_Pipe") )
+        let pipes = SKNode()
+        pipes.position  = CGPointMake( self.frame.size.width + topPipeTexture.size().width * 2, 0 );
+        pipes.zPosition = flappyZPos.pipes;
         
-        topPipe.position = CGPointMake( self.frame.width * 2.0, self.frame.height * 0.5 )
-        bottomPipe.position = CGPointMake( self.frame.width * 2.0, self.frame.height * 0.5 )
+        let topPipe = SKSpriteNode(texture: topPipeTexture)
+        topPipe.position = CGPointMake(0.0, startingYPos + topPipe.size.height + CGFloat(spaceBetweenPipes))
+        
+        let bottomPipe = SKSpriteNode(texture: bottomPipeTexture)
+        bottomPipe.position = CGPointMake(0.0, startingYPos)
         
         addPhysicsBodyToPipeNode( topPipe )
         addPhysicsBodyToPipeNode( bottomPipe )
@@ -165,9 +185,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addActionsToPipeNode( topPipe )
         addActionsToPipeNode( bottomPipe )
         
-        pipeMovement.addChild( topPipe )
-        pipeMovement.addChild( bottomPipe )
+        pipes.addChild( topPipe )
+        pipes.addChild( bottomPipe )
         
+        pipeMovement.addChild(pipes)
     }
     
     // MARK: #===== Touch =====#
@@ -176,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         flappyBird.physicsBody?.velocity = CGVectorMake( 0, 0 )
         
-        flappyBird.physicsBody?.applyImpulse( CGVectorMake( 0, 15 ) )
+        flappyBird.physicsBody?.applyImpulse( CGVectorMake( 0, 10 ) )
     }
    
     // MARK: #===== Collision =====#
