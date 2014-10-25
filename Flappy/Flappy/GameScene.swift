@@ -9,7 +9,7 @@
 import UIKit
 import SpriteKit
 
-let spaceBetweenPipes = 100.0
+let spaceBetweenPipes = 110.0
 let imagesAtlas       = SKTextureAtlas(named: "FlappyAssets")
 
 struct flappyContactMasks {
@@ -36,7 +36,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var forwardMovement: SKNode!
     var pipeMovement:    SKNode!
     var scoreFeedback:   SKLabelNode!
-
+    var score = 0
+    
     // MARK: #===== Init =====#
 
     override func didMoveToView( view: SKView ) {
@@ -64,8 +65,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let delay = SKAction.waitForDuration(NSTimeInterval(1.66))
         self.runAction( SKAction.repeatActionForever(SKAction.sequence( [ spawn, delay ] ) ) )
         
-        scoreFeedback = SKLabelNode(fontNamed: "Helvetica")
-        scoreFeedback.position = CGPointMake(frame.width / 2, frame.height / 2)
+        scoreFeedback = SKLabelNode(fontNamed: "ChalkboardSE-Bold")
+        scoreFeedback.fontSize = 60.0
+        scoreFeedback.position = CGPointMake(frame.width / 2, frame.height * 0.3 )
         addChild(scoreFeedback)
         
         forwardMovement.speed = 1.0
@@ -163,11 +165,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         spriteNode.physicsBody?.categoryBitMask    = flappyContactMasks.Pipe
     }
     
+    func incrementScore() {
+        score++
+        scoreFeedback.text = "\(score / 2)"
+    }
+    
     func addActionsToPipeNode( spriteNode: SKSpriteNode ) {
-        
-        let move = SKAction.moveByX( -self.frame.width * 2.0, y:0, duration: 5 )
+
+        let moveToBird = SKAction.moveByX( -self.frame.width * 1.1, y: 0, duration: 2.5 )
+        let scoreUpdate = SKAction.runBlock({ self.incrementScore() })
+        let moveOffscreen = SKAction.moveByX( -self.frame.width * 0.9 , y: 0, duration: 2.5 )
         let remove = SKAction.removeFromParent()
-        let actions = SKAction.repeatActionForever( SKAction.sequence( [ move, remove ] ) )
+        let actions = SKAction.repeatActionForever( SKAction.sequence( [ moveToBird, scoreUpdate, moveOffscreen, remove ] ) )
         
         spriteNode.runAction( actions )
     }
