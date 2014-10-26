@@ -168,9 +168,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func actionsForPipeSet() -> SKAction {
 
-        let moveToBird = SKAction.moveByX( -self.frame.width * 1.1, y: 0, duration: 2.5 )
+        let moveToBird = SKAction.moveByX( -self.frame.width * 1, y: 0, duration: 2.5 )
         let scoreUpdate = SKAction.runBlock({ self.incrementScore() })
-        let moveOffscreen = SKAction.moveByX( -self.frame.width * 0.9 , y: 0, duration: 2.5 )
+        let moveOffscreen = SKAction.moveByX( -self.frame.width * 1 , y: 0, duration: 2.5 )
         let remove = SKAction.removeFromParent()
         let actions = SKAction.repeatActionForever( SKAction.sequence( [ moveToBird, scoreUpdate, moveOffscreen, remove ] ) )
         
