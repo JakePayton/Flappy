@@ -63,7 +63,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(pipeMovement)
         
         let spawn = SKAction.runBlock({() in self.pipeGenerator()})
-        let delay = SKAction.waitForDuration(NSTimeInterval(1.66))
+        let delay = SKAction.waitForDuration(NSTimeInterval(1.5))
         self.runAction( SKAction.repeatActionForever(SKAction.sequence( [ spawn, delay ] ) ) )
         
         scoreFeedback = SKLabelNode(fontNamed: "Futura-CondensedExtraBold")
@@ -85,10 +85,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
 
-
     // MARK: #===== Sprites =====#
 
-   
     func addSkyline () {
 
         // TODO: there is a jump between the 3rd and 1st sprite
@@ -168,11 +166,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         spriteNode.physicsBody?.categoryBitMask    = flappyContactMasks.Pipe
     }
     
-    func incrementScore() {
-        score++
-        scoreFeedback.text = "Score:\(score)"
-    }
-    
     func actionsForPipeSet() -> SKAction {
 
         let moveToBird = SKAction.moveByX( -self.frame.width * 1.1, y: 0, duration: 2.5 )
@@ -188,7 +181,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func pipeGenerator() {
 
-        let height = UInt32( UInt(self.frame.size.height / 4) )
+        let height = UInt32( UInt(self.frame.size.height / 8 ) )
         let startingYPos = CGFloat(arc4random() % height + height  )
 
         let topPipeTexture = imagesAtlas.textureNamed("Downward_Green_Pipe")
@@ -243,6 +236,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK: #===== Helpers =====#
+    
+    func incrementScore() {
+        score++
+        scoreFeedback.text = "Score:\(score)"
+    }
     
     func constrain( minimum: CGFloat, maximum: CGFloat, attempt: CGFloat ) -> CGFloat {
         return max( minimum, min( maximum, attempt ) )
